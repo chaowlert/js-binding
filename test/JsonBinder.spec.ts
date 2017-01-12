@@ -1,10 +1,16 @@
 import { JsonBinder } from '../src/index';
 import { expect } from 'chai';
 
+let $merge: jsonBinding.IDirective = {
+    name: '$merge',
+    link: (value, template) => Object.assign({}, value, template),
+};
+
 describe('JsonBinder', () => {
     let jsonBinder = new JsonBinder();
 
     jsonBinder.registerTemplate('baz', { foo: 'baz' });
+    jsonBinder.registerDirective($merge);
 
     it('should be able to bind', () => {
         let result: any;
@@ -26,25 +32,49 @@ describe('JsonBinder', () => {
         expect(result).deep.equals([ 'foo', 'bar' ]);
 
         //$bind
-        result = jsonBinder.bind({ $bind: 'x' }, { x: 1 });
-        expect(result).equals(1);
+        result = jsonBinder.bind(
+            { test: { $bind: 'foo' } }, 
+            { foo: ['bar'] }
+        );
+        expect(result).deep.equals({ test: ['bar'] });
 
         //$content
-        result = jsonBinder.bind({ $content: '{{foo}}' }, { foo: 'bar' });
-        expect(result).equals('bar');
+        result = jsonBinder.bind(
+            { test: { $content: ['bar'] } }, 
+            { }
+        );
+        expect(result).deep.equals({ test: ['bar'] });
 
         //$if
-        result = jsonBinder.bind({ $if: 'x == 1', foo: 'bar' }, { x: 1 });
-        expect(result).deep.equals({ foo: 'bar' });
+        result = jsonBinder.bind(
+            { test: { $if: 'x == 1', foo: 'bar' } }, 
+            { x: 1 }
+        );
+        expect(result).deep.equals({ test: { foo: 'bar' } });
 
-        result = jsonBinder.bind({ $if: 'x == 2', foo: 'bar' }, { x: 1 });
-        expect(result).is.undefined;
+        result = jsonBinder.bind(
+            { test: { $if: 'x == 2', foo: 'bar' } }, 
+            { x: 1 }
+        );
+        expect(result).deep.equals({ });
 
-        result = jsonBinder.bind({ $if: 'x == 1', $content: 'yes', $else: 'no' }, { x: 1 });
-        expect(result).equals('yes');
+        result = jsonBinder.bind(
+            { test: { $if: 'x == 1', $content: 'yes', $else: 'no' } }, 
+            { x: 1 }
+        );
+        expect(result).deep.equals({ test: 'yes' });
 
-        result = jsonBinder.bind({ $if: 'x == 2', $content: 'yes', $else: 'no' }, { x: 1 });
-        expect(result).equals('no');
+        result = jsonBinder.bind(
+            { test: { $if: 'x == 2', $content: 'yes', $else: 'no' } }, 
+            { x: 1 }
+        );
+        expect(result).deep.equals({ test: 'no' });
+
+        result = jsonBinder.bind({
+            foo: { $if: 'x == 1', fooKey: 'fooValue' },
+            bar: { $if: 'x == 2', barKey: 'barValue' },
+        }, { x: 1 });
+        expect(result).deep.equals({ foo: { fooKey: 'fooValue' } });
 
         //$init
         result = jsonBinder.bind({ $init: 'x = 2', $content: '{{x}}' }, { x: 1 });
@@ -61,9 +91,35 @@ describe('JsonBinder', () => {
         result = jsonBinder.bind({ $repeat: '(key, value) in obj', $content: '{{key}}={{value}}' }, { obj: { a: 'b', c: 'd' } });
         expect(result).deep.equals(['a=b', 'c=d']);
 
+        result = jsonBinder.bind(
+            { list: [ { $repeat: 'item in items', $if: 'item != "c"', value: '{{item}}' } ] }, 
+            { items: [ 'a', 'b', 'c' ]}
+        );
+        expect(result).deep.equals({ 
+            list: [
+                { value: 'a' },
+                { value: 'b' },
+            ]
+        });
+
+        result = jsonBinder.bind(
+            { list: { $repeat: 'item in items', $if: 'item != "c"', value: '{{item}}' } }, 
+            { items: [ 'a', 'b', 'c' ]}
+        );
+        expect(result).deep.equals({ 
+            list: [
+                { value: 'a' },
+                { value: 'b' },
+            ]
+        });
+
         //$template
         result = jsonBinder.bind({ $template: 'template' }, { template: 'baz' });
         expect(result).deep.equals({ foo: 'baz' });
+
+        //custom directive
+        result = jsonBinder.bind({ $merge: { foo: 'foo' }, bar: 'bar' }, { });
+        expect(result).deep.equals({ foo: 'foo', bar: 'bar' });
     });
 
     it('should be able to bind asynchronously', async() => {

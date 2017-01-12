@@ -1,6 +1,6 @@
 import * as expressions from 'angular-expressions';
 
-import { MaybePromise } from '../MaybePromise';
+import { MaybePromise } from 'maybe-promise';
 
 export let $if: jsonBinding.IDirective = {
     name: '$if',

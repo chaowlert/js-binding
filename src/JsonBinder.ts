@@ -6,7 +6,7 @@ import { $if } from './directives/$if';
 import { $init } from './directives/$init';
 import { $repeat } from './directives/$repeat';
 import { $template } from './directives/$template';
-import { MaybePromise } from './MaybePromise';
+import { MaybePromise } from 'maybe-promise';
 
 export class JsonBinder implements jsonBinding.IJsonBinder {
 
@@ -37,7 +37,7 @@ export class JsonBinder implements jsonBinding.IJsonBinder {
             Object.assign(result, parent);
         }
         result.$parent = parent;
-        result.$root = parent && parent.$root;
+        result.$root = parent && parent.$root || parent;
         return result;
     }
 

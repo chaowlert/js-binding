@@ -86,7 +86,7 @@ gulp.task('listfiles-model', function () {
 
 gulp.task('listfiles-index', function () {
     return gulp.src([
-        'src/**/*.ts',
+        'src/*.ts',
         '!src/index.ts',
         '!src/models/**.ts'
     ], { read: false })

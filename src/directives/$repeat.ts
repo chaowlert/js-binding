@@ -1,6 +1,6 @@
 import * as expressions from 'angular-expressions';
 
-import { MaybePromise } from '../MaybePromise';
+import { MaybePromise } from 'maybe-promise';
 
 let REPEAT_REGEX = /^\s*(.+?)\s+in\s+(.+)$/;
 let KEY_REGEX = /^(?:([$\w]+)|\(\s*([$\w]+)\s*,\s*([$\w]+)\s*\))$/;
@@ -8,7 +8,7 @@ let KEY_REGEX = /^(?:([$\w]+)|\(\s*([$\w]+)\s*,\s*([$\w]+)\s*\))$/;
 export let $repeat: jsonBinding.IDirective = {
     name: '$repeat',
     priority: 1000,
-    link(this: jsonBinding.IJsonBinder, value: string, template, $scope) {
+    link(value: string, template, $scope) {
         let match = value.match(REPEAT_REGEX);
         if (!match) {
             throw `Expect expression in form of '_item_ in _collection_' but got '${value}'`;
