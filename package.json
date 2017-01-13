@@ -1,6 +1,6 @@
 {
   "name": "json-binding",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Simplified json generation",
   "main": "dist/index.js",
   "typings": "dist/index.d.ts",
@@ -39,6 +39,7 @@
     "gulp-listfiles": "^0.1.0",
     "gulp-load-plugins": "^1.4.0",
     "gulp-mocha": "^3.0.1",
+    "gulp-ng-annotate": "^2.0.0",
     "gulp-replace-task": "^0.11.0",
     "gulp-sourcemaps": "~2.2.3",
     "gulp-tslint": "^7.0.1",

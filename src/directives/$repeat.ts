@@ -1,5 +1,3 @@
-import * as expressions from 'angular-expressions';
-
 import { MaybePromise } from 'maybe-promise';
 
 let REPEAT_REGEX = /^\s*(.+?)\s+in\s+(.+)$/;
@@ -25,7 +23,7 @@ export let $repeat: jsonBinding.IDirective = {
         let valueIdentifier = match[3] || match[1];
         let keyIdentifier = match[2] || '$index';
 
-        let result = expressions.compile(rhs)($scope);
+        let result = this.parse(rhs)($scope);
         let maybe = new MaybePromise(result);
         maybe = maybe.chain(r => {
             let array: any[] = [];

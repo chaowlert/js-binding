@@ -127,7 +127,13 @@ expect(result).deep.equals({
 You can loop through object.
 
 ```
-result = jsonBinder.bind({ $repeat: '(key, value) in obj', $content: '{{key}}={{value}}' }, { obj: { a: 'b', c: 'd' } });
+result = jsonBinder.bind(
+    { 
+        $repeat: '(key, value) in obj', 
+        $content: '{{key}}={{value}}' 
+    }, 
+    { obj: { a: 'b', c: 'd' } }
+);
 expect(result).deep.equals(['a=b', 'c=d']);
 ```
 
@@ -150,3 +156,20 @@ You can add custom directives by `registerDirective`. Please see example in unit
 ## Promise
 
 If one of operation is `Promise`, `bind` method will return `Promise`. Otherwise `JsonBinder` will return non-promise value.
+
+## Plug to AngularJS
+
+This library can be used in NodeJS or on browser without AngularJS. If you would like to register `JsonBinder` to AngularJS and using AngularJS filters, you can do following.
+
+```
+angular.module('yourModule')
+    .service('jsonBinder', JsonBinder);
+```
+
+Now you can use AngularJS filters.
+
+```
+{
+    totalValue: '{{ vm.sumTotal() | number:2 }}'
+}
+```

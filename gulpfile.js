@@ -46,7 +46,10 @@ gulp.task('build-dist', function () {
             process.exit(1);
         });
     return merge([
-        tsResult.js.pipe(gulp.dest('dist/')),
+        tsResult
+            .js
+            .pipe($.ngAnnotate({ add: true, remove: true, singleQuotes: true }))
+            .pipe(gulp.dest('dist/')),
         tsResult.dts.pipe(gulp.dest('dist/')),
     ]);
 });
@@ -134,6 +137,12 @@ gulp.task('build-test', function () {
         .pipe(gulp.dest('build/'));
 });
 
+gulp.task('ng-annotate', function() {
+    return gulp.src(['build/**/*.js'], { base: './' })
+        .pipe($.ngAnnotate({ add: true, remove: true, singleQuotes: true }))
+        .pipe(gulp.dest('./'));
+});
+
 gulp.task('clean-build', function () {
     return gulp.src('build', { read: false })
         .pipe($.clean());
@@ -192,6 +201,7 @@ gulp.task('test', function (cb) {
         'build-src',
         'istanbul:hook',
         'build-test',
+        'ng-annotate',
         'mocha',
         'remap-istanbul',
         cb);
@@ -201,6 +211,8 @@ gulp.task('build', function (cb) {
     runSequence(
         'prepare',
         'build-src',
+        'build-test',
+        'ng-annotate',
         cb);
 });
 

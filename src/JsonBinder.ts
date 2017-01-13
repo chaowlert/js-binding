@@ -1,5 +1,3 @@
-import * as expressions from 'angular-expressions';
-
 import { $bind } from './directives/$bind';
 import { $content } from './directives/$content';
 import { $if } from './directives/$if';
@@ -8,7 +6,15 @@ import { $repeat } from './directives/$repeat';
 import { $template } from './directives/$template';
 import { MaybePromise } from 'maybe-promise';
 
+/* @ngInject */
 export class JsonBinder implements jsonBinding.IJsonBinder {
+
+    constructor(private $parse?: jsonBinding.IParseService) {
+        if (!this.$parse) {
+            let expressions = require('angular-expressions');
+            this.$parse = expressions.compile;
+        }
+    }
 
     private templates: Record<string, any> = {};
     registerTemplate(name: string, template: any) {
@@ -43,7 +49,11 @@ export class JsonBinder implements jsonBinding.IJsonBinder {
 
     private static EXPR_REGEX = /{{(.*?)}}/g;
     interpolate(text: string, $scope: any) {
-        return text.replace(JsonBinder.EXPR_REGEX, (_, expr) => expressions.compile(expr)($scope));
+        return text.replace(JsonBinder.EXPR_REGEX, (_, expr) => this.$parse(expr)($scope));
+    }
+
+    parse(expr: string) {
+        return this.$parse(expr);
     }
 
     getTemplate(name: string) {
