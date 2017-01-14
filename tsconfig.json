@@ -10,7 +10,7 @@
     "declaration": false,
     "removeComments": false,
     "noLib": false,
-    "importHelpers": true,
+    "noEmitHelpers": true,
     "lib": [
         "dom",
         "es2015"

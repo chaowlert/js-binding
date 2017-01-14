@@ -125,6 +125,7 @@ gulp.task('build-src', function () {
 var tsTestProject = $.typescript.createProject('tsconfig.json', {
     target: 'es5',
     removeComments: false,
+    importHelpers: true
 });
 
 gulp.task('build-test', function () {
